@@ -5,17 +5,21 @@ permalink: /network_1/
 ---
 
 <div id="graph">
-    <svg style="height:100%;width:100%;"></svg>
+    <svg style="height:500;width:750;"></svg>
 </div>
 
 <script>
     d3.json("../assets/centrality_graph.json").then(function(data) {
-        var width = 10, height = 10;
+        var width = 500, height = 750;
         var nodes = data["nodes"];
         var links = data["links"];
         
+        var degAvg = nodes.map(function(d) {return d.degree}).reduce(function(a,b) {return a+b}) / nodes.length;
+        console.log(degAvg);
+        
         var simulation = d3.forceSimulation(nodes)
-            .force("charge", d3.forceManyBody().strength(-25))
+            .force("link", d3.forceLink(links).id(function(d) {return d.id;}))
+            .force("charge", d3.forceManyBody().strength(function(d){return (degAvg - d["degree"])/9;}))
             .force("center", d3.forceCenter(width / 2, height / 2))
             .on("tick", ticked);
         
@@ -24,7 +28,7 @@ permalink: /network_1/
                 .select("svg")
                 .selectAll("circle")
                 .data(nodes);
-            
+                       
             g.enter()
                 .append("circle")
                 .attr("fill", "orange")
@@ -35,11 +39,11 @@ permalink: /network_1/
                 })
                 .attr("cy", function(d) {
                     return d.y
-                });
+                })
+            ;
             
             g.exit().remove();
         }
-        
         
         d3.select("#graph")
             .append("p")
