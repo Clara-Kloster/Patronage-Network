@@ -5,24 +5,29 @@ permalink: /network_1/
 ---
 
 <div id="graph">
-    <svg style="height:500;width:750;"></svg>
+    <svg style="height:750;width:1000;"></svg>
 </div>
 
 <script>
     d3.json("../assets/centrality_graph.json").then(function(data) {
         var width = 500, height = 750;
+        
+        //assign node and edge data to variables
         var nodes = data["nodes"];
         var links = data["links"];
         
+        // find avg degree score for nodes in graph
         var degAvg = nodes.map(function(d) {return d.degree}).reduce(function(a,b) {return a+b}) / nodes.length;
         console.log(degAvg);
         
+        // force simulation for visualizing the graph
         var simulation = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links).id(function(d) {return d.id;}))
             .force("charge", d3.forceManyBody().strength(function(d){return (degAvg - d["degree"])/9;}))
             .force("center", d3.forceCenter(width / 2, height / 2))
             .on("tick", ticked);
-        
+                
+        // function for the simulation, appends all nodes
         function ticked() {
             var g = d3.select("#graph")
                 .select("svg")
@@ -45,18 +50,21 @@ permalink: /network_1/
             g.exit().remove();
         }
         
+        // state the number of nodes in a new <p>
         d3.select("#graph")
             .append("p")
                 .text(function() { 
                     return "There are " + Object.keys(data["nodes"]).length + " nodes." 
                 });
         
+        // state the number of edges in a new <p>
         d3.select("#graph")
             .append("p")
                 .text(function() { 
                     return "There are " + Object.keys(data["links"]).length + " edges." 
                 });
-    
+        
+        // style the <p> elements
         d3.select("#graph")
             .selectAll("p")
                 .style('font-size', '20px');
