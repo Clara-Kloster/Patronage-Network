@@ -65,12 +65,28 @@ permalink: /network_1/
                         .attr("dy", "0.2em")
                         .text(function(d){return d.name;});
         */
+        var focusEdge = [];
+        var focusNode;
 
         function focusCluster(c, t) {
-            edge.lower()
+            //edge.lower()
+            focusEdge.forEach(function(item){item.lower()})
+            focusEdge = [];
+            
+
             t.attr("fill", "orange");
+
+            if (focusNode){
+                focusNode.attr("fill", "#ccc")
+            }
+            
+            focusNode=t
+            
+
+
             edge.attr("stroke", function(d){
                     if (d.target.id==c.id || d.source.id==c.id){
+                        focusEdge.push(d3.select(this))
                         d3.select(this).raise()
                         return "orange";
                     }
