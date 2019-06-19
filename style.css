@@ -6,6 +6,16 @@ line {
     stroke-width: 1spx;
 }
 
-.hovered {  
+circle {
+    fill:#ccc;
+    stroke:#000;
+    stroke-width: 1.5px;
+}
+
+line.hovered {  
     stroke:orange;
+}
+
+circle.hovered {  
+    fill:orange;
 }

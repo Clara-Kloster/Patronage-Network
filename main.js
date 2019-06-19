@@ -35,9 +35,6 @@ d3.json("../assets/centrality_graph.json").then(function(data) {
                          .enter()
                          .append("g")
                          .attr("id", function(d){return d.id})
-                         .attr("fill", "#ccc")
-                         .attr("stroke", "#000")
-                         .attr("stroke-width", "1.5px")
                          .on("click", function(d){
                             focusCluster(d, d3.select(this))
                          });
@@ -52,28 +49,22 @@ d3.json("../assets/centrality_graph.json").then(function(data) {
                         .text(function(d){return d.name;});
         */
 
-        var focusNode;
 
-        function focusCluster(c, t) {
+        function focusCluster(c, focusNode) {
 
-            // Find all previosuly selected edges
+            // Unhover all previosuly selected edges and nodes
             focusEdge = d3.selectAll(".hovered");
             focusEdge.lower()
             focusEdge.attr("class", "")
-
-            t.attr("fill", "orange");
-
-            if (focusNode && focusNode.attr('id')!=t.attr('id')){
-                focusNode.attr("fill", "#ccc")
-            }
             
-            focusNode=t
-            
+            // Hover edge
             var focusEdge = edge.filter(function(d) {return d.target.id==c.id || d.source.id==c.id})
             focusEdge.attr("class", "hovered")
             focusEdge.raise()
 
-            t.raise()
+            // Hover node
+            focusNode.select("circle").attr("class", "hovered");
+            focusNode.raise()
         }        
                 
         // function for the simulation, appends all nodes
