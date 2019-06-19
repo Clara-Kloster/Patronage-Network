@@ -25,6 +25,8 @@ d3.json("../assets/centrality_graph.json").then(function(data) {
         
         linfo = info.append("div");
             
+        var table = d3.select("#table")
+                    .append("table");
 
         var graph = d3.select("#graph")
                       .append("svg")
@@ -55,8 +57,33 @@ d3.json("../assets/centrality_graph.json").then(function(data) {
                         .attr("dy", "0.2em")
                         .text(function(d){return d.name;});
         */
+        
+        // Draw table
+        var trow = table.selectAll("tr")
+                .data(nodes)
+                .enter()
+                .append("tr")
+                .on("click", function(d){focusCluster(d,  node.filter(function(p){return d.id==p.id}))});
+        
+        trow.append("td")
+            .text(function(d){return d.id});
+                        
+        trow.append("td")
+            .text(function(d){return d.name});
 
+        trow.append("td")
+            .text(function(d){return d.documents});
 
+        trow.append("td")
+            .text(function(d){return d.date_range});
+
+        trow.append("td")
+            .text(function(d){return d.betweenness});
+            
+        trow.append("td")
+            .text(function(d){return d.degree});
+            
+            
         function focusCluster(c, focusNode, updateInfo=true) {
 
             // Unhover all previosuly selected edges and nodes
