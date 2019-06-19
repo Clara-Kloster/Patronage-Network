@@ -19,3 +19,7 @@ line.hovered {
 circle.hovered {  
     fill:orange;
 }
+
+circle.hovered.secondary {  
+    fill:peachpuff;
+}

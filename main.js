@@ -19,6 +19,13 @@ d3.json("../assets/centrality_graph.json").then(function(data) {
             .force("collide", d3.forceCollide(2.5))
             .on("tick", ticked);
         
+        var info = d3.select("#info");
+        rinfo = info.append("div")
+                    .append("p");
+        
+        linfo = info.append("div");
+            
+
         var graph = d3.select("#graph")
                       .append("svg")
                       .attr("width", width)
@@ -50,21 +57,56 @@ d3.json("../assets/centrality_graph.json").then(function(data) {
         */
 
 
-        function focusCluster(c, focusNode) {
+        function focusCluster(c, focusNode, updateInfo=true) {
 
             // Unhover all previosuly selected edges and nodes
             focusEdge = d3.selectAll(".hovered");
             focusEdge.lower()
             focusEdge.attr("class", "")
             
+            // Array over connected nodes
+            var lnodes = [];
+
             // Hover edge
-            var focusEdge = edge.filter(function(d) {return d.target.id==c.id || d.source.id==c.id})
+            var focusEdge = edge.filter(function(d) {
+                if (d.target.id==c.id){
+                    lnodes.push(d.source)
+                    return true
+                }
+                else if (d.source.id==c.id){
+                    lnodes.push(d.target)
+                    return true
+                }})
+            
             focusEdge.attr("class", "hovered")
             focusEdge.raise()
-
+            
             // Hover node
             focusNode.select("circle").attr("class", "hovered");
             focusNode.raise()
+
+            // Selection over connected nodes
+            var lnodes = node.filter(function(d){return lnodes.map(function(p){return p.id}).includes(d.id)});
+            lnodes.select("circle").attr("class", "hovered secondary")
+            lnodes.raise()
+
+            // Update info box
+            if (updateInfo) {
+                rinfo.text(c.name)
+
+                var lnodes_p = linfo.selectAll("div")
+                    .data(lnodes.data(), function(d){return d.id});
+                
+                lnodes_p.exit()
+                    .remove();
+                
+                lnodes_p.enter()
+                    .append("div")
+                    .text(function(d){return d.name})
+                    .on("click", function(d){
+                        focusCluster(d, node.filter(function(p){return d.id==p.id}), updateInfo=false);
+                    });
+            }
         }        
                 
         // function for the simulation, appends all nodes
