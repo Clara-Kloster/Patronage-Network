@@ -28,10 +28,7 @@ d3.json("../assets/centrality_graph.json").then(function(data) {
                         .data(links)
                         .enter()
                         .append("line")
-                        .attr("id", function(d){return d.id})
-                        .attr("stroke", "#777")
-                        .attr("stroke-opacity", 0.8)
-                        .attr("stroke-width", "1spx");  
+                        .attr("id", function(d){return d.id});
 
         var node = graph.selectAll(".node")
                          .data(nodes)
@@ -54,36 +51,29 @@ d3.json("../assets/centrality_graph.json").then(function(data) {
                         .attr("dy", "0.2em")
                         .text(function(d){return d.name;});
         */
-        var focusEdge = [];
+
         var focusNode;
 
         function focusCluster(c, t) {
-            //edge.lower()
-            focusEdge.forEach(function(item){item.lower()})
-            focusEdge = [];
-            
+
+            // Find all previosuly selected edges
+            focusEdge = d3.selectAll(".hovered");
+            focusEdge.lower()
+            focusEdge.attr("class", "")
 
             t.attr("fill", "orange");
-            //console.log("1", t.attr('id'))
-            //console.log("2", focusNode.select("g").attr('id'))
-            //console.log((focusNode && focusNode!=t))
+
             if (focusNode && focusNode.attr('id')!=t.attr('id')){
                 focusNode.attr("fill", "#ccc")
             }
             
             focusNode=t
             
-            edge.attr("stroke", function(d){
-                    if (d.target.id==c.id || d.source.id==c.id){
-                        focusEdge.push(d3.select(this))
-                        d3.select(this).raise()
-                        return "orange";
-                    }
-                    else {return "#777"}
-                    });
+            var focusEdge = edge.filter(function(d) {return d.target.id==c.id || d.source.id==c.id})
+            focusEdge.attr("class", "hovered")
+            focusEdge.raise()
+
             t.raise()
-            console.log(t)
-            console.log(c)
         }        
                 
         // function for the simulation, appends all nodes
